@@ -9,6 +9,7 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 
 import java.time.Duration;
+import java.util.List;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -73,6 +74,42 @@ public class MeetingsTests extends BaseTests {
 
         assertThat(found)
                 .as("Nie znaleziono tytułu '%s' w widocznej treści strony", title)
+                .isTrue();
+    }
+
+    @Test
+    @DisplayName("[SPOTKANIA.2] The user should be able to sign up for Meeting A.")
+    void userCanSignUpForMeeting() {
+        driver.get(Const.HOME_PAGE);
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+
+        WebElement loginInput = wait.until(
+                ExpectedConditions.visibilityOfElementLocated(
+                        By.xpath("//label[contains(text(),'Zaloguj')]/following-sibling::input"))
+        );
+        loginInput.sendKeys(Const.USER_II_NAME);
+        driver.findElement(By.xpath("//button[normalize-space()='Wchodzę']")).click();
+
+        String title = Const.MEETING_I_TITLE;
+        By rowLocator = By.xpath("//tr[td[normalize-space()='" + title + "']]");
+        WebElement row = wait.until(ExpectedConditions.presenceOfElementLocated(rowLocator));
+
+        List<WebElement> signInButtons = row.findElements(
+                By.xpath(".//button[normalize-space()='Zapisz się']")
+        );
+
+        if (signInButtons.isEmpty()) {
+            System.out.println("Użytkownik jest już zapisany lub brak przycisku.");
+        } else {
+            signInButtons.get(0).click();
+        }
+
+        boolean isVisible = wait.until(ExpectedConditions.presenceOfElementLocated(
+                By.xpath("//tr[td[normalize-space()='" + title + "']]//li[normalize-space()='" + Const.USER_II_NAME + "']"))
+        ) != null;
+
+        assertThat(isVisible)
+                .as("Użytkownik powinien być widoczny na liście uczestników Meeting A.")
                 .isTrue();
     }
 
