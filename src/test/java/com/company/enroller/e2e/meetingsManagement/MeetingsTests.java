@@ -25,56 +25,42 @@ public class MeetingsTests extends BaseTests {
     }
 
     @Test
-    @DisplayName("[SPOTKANIA.1] The meeting should be added to your meeting list.")
+    @DisplayName("[SPOTKANIA.1] The meeting should be added to your meeting list. It should contain a title and description.")
     void addNewMeeting() {
         driver.get(Const.HOME_PAGE);
         WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
 
-        WebElement loginInput = wait.until(
-                ExpectedConditions.visibilityOfElementLocated(
-                        By.xpath("//label[contains(text(),'Zaloguj')]/following-sibling::input"))
-        );
-        loginInput.sendKeys(Const.USER_I_NAME);
+        wait.until(ExpectedConditions.visibilityOfElementLocated(
+                        By.xpath("//label[contains(text(),'Zaloguj')]/following-sibling::input")))
+                .sendKeys(Const.USER_I_NAME);
 
-        WebElement loginBtn = driver.findElement(
-                By.xpath("//button[normalize-space()='Wchodzę']")
-        );
-        loginBtn.click();
+        driver.findElement(By.xpath("//button[normalize-space()='Wchodzę']")).click();
 
-        WebElement addMeetingBtn = wait.until(
-                ExpectedConditions.elementToBeClickable(
-                        By.xpath("//button[normalize-space()='Dodaj nowe spotkanie']")
-                )
-        );
-        addMeetingBtn.click();
+        wait.until(ExpectedConditions.elementToBeClickable(
+                By.xpath("//button[normalize-space()='Dodaj nowe spotkanie']"))).click();
 
         String title = "Test-" + UUID.randomUUID();
         String description = "Opis testowy";
 
-        WebElement titleInput = wait.until(
-                ExpectedConditions.visibilityOfElementLocated(
-                        By.xpath("//form//input[@type='text']")
-                )
-        );
-        titleInput.sendKeys(title);
+        wait.until(ExpectedConditions.visibilityOfElementLocated(
+                By.xpath("//form//input[@type='text']"))).sendKeys(title);
 
-        WebElement descriptionInput = driver.findElement(
-                By.xpath("//form//textarea")
-        );
-        descriptionInput.sendKeys(description);
+        driver.findElement(By.xpath("//form//textarea")).sendKeys(description);
 
-        WebElement submitBtn = driver.findElement(
-                By.xpath("//form//button[normalize-space()='Dodaj']")
-        );
-        submitBtn.click();
+        driver.findElement(By.xpath("//form//button[normalize-space()='Dodaj']")).click();
 
-        boolean found = wait.until(ExpectedConditions.textToBePresentInElementLocated(
-                By.tagName("body"), title
-        ));
+        By rowLocator = By.xpath("//tr[td[normalize-space()='" + title + "']]");
+        WebElement row = wait.until(ExpectedConditions.presenceOfElementLocated(rowLocator));
 
-        assertThat(found)
-                .as("Nie znaleziono tytułu '%s' w widocznej treści strony", title)
-                .isTrue();
+        assertThat(row).isNotNull();
+
+        String descCellText = row.findElement(By.xpath("./td[2]")).getText();
+        assertThat(descCellText).isEqualTo(description);
+
+        List<WebElement> matchingMeetings = driver.findElements(rowLocator);
+        assertThat(matchingMeetings)
+                .as("Spotkanie o tytule '" + title + "' powinno istnieć dokładnie raz")
+                .hasSize(1);
     }
 
     @Test
