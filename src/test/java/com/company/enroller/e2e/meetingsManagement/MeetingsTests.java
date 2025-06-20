@@ -161,6 +161,41 @@ public class MeetingsTests extends BaseTests {
                 .isTrue();
     }
 
+    @Test
+    @DisplayName("[SPOTKANIA.4] The 'Dodaj' button should be disabled when meeting title is empty.")
+    void userCannotAddMeetingWithoutTitle() {
+        driver.get(Const.HOME_PAGE);
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+
+        WebElement loginInput = wait.until(
+                ExpectedConditions.visibilityOfElementLocated(
+                        By.xpath("//label[contains(text(),'Zaloguj')]/following-sibling::input"))
+        );
+        loginInput.sendKeys(Const.USER_I_NAME);
+        driver.findElement(By.xpath("//button[normalize-space()='Wchodzę']")).click();
+
+        WebElement addBtn = wait.until(
+                ExpectedConditions.elementToBeClickable(By.xpath("//button[normalize-space()='Dodaj nowe spotkanie']"))
+        );
+        addBtn.click();
+
+        WebElement descriptionInput = wait.until(
+                ExpectedConditions.visibilityOfElementLocated(By.xpath("//form//textarea"))
+        );
+        descriptionInput.sendKeys("Opis bez tytułu");
+
+
+        WebElement submitBtn = driver.findElement(
+                By.xpath("//form//button[normalize-space()='Dodaj']")
+        );
+
+        boolean disabled = !submitBtn.isEnabled();
+        assertThat(disabled)
+                .as("Przycisk 'Dodaj' powinien być nieaktywny, jeśli pole tytułu jest puste.")
+                .isTrue();
+    }
+
+
     @AfterEach
     void teardown() {
         driver.quit();
