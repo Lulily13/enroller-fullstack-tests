@@ -14,13 +14,14 @@ import java.util.List;
 
 public class LoginPage extends BasePage {
 
+
     @FindBy(css = "div > input + button")
     private WebElement loginBtn;
 
     @FindBy(css = "TODO")
     private WebElement logoutBtn;
 
-    @FindBy(css = "TODO")
+    @FindBy(css = "#root > div > div > input[type=text]")
     private WebElement loginInput;
 
     @FindBy(css = "TODO")
@@ -38,11 +39,14 @@ public class LoginPage extends BasePage {
     }
 
     public void loginAs(String login) {
-        //TODO
+        this.loginInput.sendKeys(login);
+        this.click(this.loginBtn);
+
     }
 
     public Boolean loginBtnIsPresent() {
-        return this.elementIsPresent(this.loginBtn);
+        List<WebElement> btn = this.driver.findElements(By.cssSelector("div > input + button"));
+        return !btn.isEmpty();
     }
 
 }

@@ -18,7 +18,8 @@ public class Const {
 
     // LABELS
     public final static String NEW_MEETING_BTN_LABEL = "Dodaj nowe spotkanie";
+    public final static String FOR_FUN_WWW = "https://ipsych.up.krakow.pl/pracownik/lista-pracownikow/";
 
 }
-// https://ipsych.up.krakow.pl/pracownik/lista-pracownikow/
+
 // https://www.selenium.dev/selenium/docs/api/java/org/openqa/selenium/support/ui/ExpectedConditions.html
